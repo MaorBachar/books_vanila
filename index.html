@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>My Books</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="search-container">
+      <input id="searchInput" type="text" placeholder="Search for a book">
+      <button onclick="search()">Search</button>
+    </div>
+    <div class="responsive-table">
+      <div id="dynamic-table"></div>
+      <div id="pagination">
+        <div>
+          <a href="javascript:prevPage()" id="btnPrev">Prev</a>
+          <a href="javascript:nextPage()" id="btnNext">Next</a>
+        </div>
+        <div>
+          current page: <span id="page"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="main.js">
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,207 @@
+* { padding: 0; margin: 0; }
+html, body {
+    min-height: 100% !important;
+    height: 100%;
+    background-color: #e9eaef;
+}
+ 
+body {
+    background-color: #e9eaef;
+    font-family: Helvetica, Arial;
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    align-items: center;
+  } 
+  
+  h2 {
+    color: #999;
+    font-weight: 400;
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .container {
+    width: 1000px;
+    margin: 0 auto;
+    background-color: #fff;
+    height: 90%;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+
+  }
+  
+  .container table {
+    border: 1px solid #d6d6d6;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #fff;
+  }
+  
+  .container table thead {
+    background-color: #ffffff;
+    border: 1px solid #d6d6d6;
+    border-bottom: none;
+  }
+  .container table thead th {
+    text-transform: capitalize;
+    border-right: 1px solid #d6d6d6;
+    background-color: #f5f5f5;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .container table thead th:last-child {
+    border-right: none;
+  }
+  .container table thead th a {
+    position: relative;
+    text-decoration: none;
+    color: #8693d3;
+    display: block;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    padding-right: 25px;
+  }
+  .container table thead th a:hover,
+  .container table thead th a:focus {
+    background-color: #e2e2e4;
+  }
+  
+  .container table thead th.ascendent_sort,.container table thead th.descendent_sort {
+    background-color: #e3edfd;
+  }
+  
+  .container table thead th.ascendent_sort a:hover,
+  .container table thead th.ascendent_sort a:focus,
+  .container table thead th.descendent_sort a:hover,
+  .container table thead th.descendent_sort a:focus {
+    background-color: transparent;
+  }
+  
+  .container table thead th.ascendent_sort a:before,.container table thead th.descendent_sort a:before {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    border: 5px solid transparent;
+  }
+  
+  .container table thead th.ascendent_sort a:before {
+    border-bottom-color: #3F51B5;
+    margin-top: -7px;
+  }
+  
+  .container table thead th.descendent_sort a:before {
+    border-top-color: #3F51B5;
+    margin-top: -2px;
+  }
+  
+  .container table tbody tr {
+    border-top: 1px solid #d6d6d6;
+  }
+  .container table tbody td {
+    border-right: 1px solid #d6d6d6;
+    font-size: 12px;
+    padding: 10px;
+  }
+  .container table tbody td:last-child {
+    border-right: none;
+  }
+  
+  .responsive-table {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 0 10px;
+    height: 100%;
+  }
+  
+  .btn {
+    display: inline-block;
+    border: none;
+    padding: 5px;
+    margin-top: 10px;
+    background-color: #2196F3;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .btn:hover,
+  .btn:focus {
+    background-color: #1772b3
+  }
+  
+  .loading {
+    display: block;
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+  }
+  
+  .custom-data {
+    border-top: 1px solid #ccc;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  
+  .custom-data textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100px;
+  }
+
+  .search-container{
+    padding: 10px;
+  }
+
+  .search-container button{
+    height: 25px;
+    width: 60px;
+    border-radius: 3px;
+    padding: 0 5px;
+    border: navajowhite;
+    box-shadow: 0px 0px 1px #e9eaef;
+    color: #4d4d50;
+    outline: none;
+    cursor: pointer;
+}
+
+#dynamic-table{
+  position: relative;
+  min-height: 500px;
+}
+
+  .loader{
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 0;
+  }
+
+  #pagination{
+    display: none;
+    justify-content: space-between;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  #searchInput{
+    width: 200px;
+    height: 25px;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid #e9eaef;
+    padding: 0 5px;
+  }
