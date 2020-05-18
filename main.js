@@ -1,14 +1,15 @@
 let tableData;
 
-function search(text = "JAVA", startIndex = 0, maxRows = 10, currentPage = 1) {
+function search(text, startIndex = 0, maxRows = 10, currentPage = 1) {
   text = document.getElementById('searchInput').value;
-  let xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
   xhr.open('get', `https://www.googleapis.com/books/v1/volumes?q=${text}&startIndex=${startIndex}&maxResults=${maxRows}`);
   xhr.send();
 
   xhr.onload = function () {
     const data = JSON.parse(xhr.response);
     tableData = transformData(data, startIndex, maxRows);
+    debugger
     createTable(tableData);
     changePage(currentPage);
   };
@@ -16,18 +17,21 @@ function search(text = "JAVA", startIndex = 0, maxRows = 10, currentPage = 1) {
 
 
 function transformData(json, startIndex, maxRows) {
-  const data = json.items.map(book => {
-    return {
-      id: { value: book.id, type: 'text' },
-      title: { value: book.volumeInfo.title, type: 'text' },
-      authors: { value: book.volumeInfo.authors, type: 'text' },
-      publishedDate: { value: book.volumeInfo.publishedDate, type: 'date' },
-      pages: { value: book.volumeInfo.pageCount, type: 'number' },
-      categories: { value: book.volumeInfo.categories, type: 'text' },
-      image: { value: extractImage(book), type: 'text' },
-      language: { value: book.volumeInfo.language, type: 'text' },
-    }
-  })
+  let data;
+  if (json.items) {
+    data = json.items.map(book => {
+      return {
+        id: { value: book.id, type: 'text' },
+        title: { value: book.volumeInfo.title, type: 'text' },
+        authors: { value: book.volumeInfo.authors, type: 'text' },
+        publishedDate: { value: book.volumeInfo.publishedDate, type: 'date' },
+        pages: { value: book.volumeInfo.pageCount, type: 'number' },
+        categories: { value: book.volumeInfo.categories, type: 'text' },
+        image: { value: extractImage(book), type: 'text' },
+        language: { value: book.volumeInfo.language, type: 'text' },
+      }
+    })
+  }
   return { items: data, totalItems: json.totalItems, startIndex, maxRows };
 }
 
@@ -39,34 +43,40 @@ function extractImage(book) {
 }
 
 function createTable(data) {
-  var divId = 'dynamic-table';
-  var div = document.getElementById(divId);
-  var loaderEl = document.createElement('svg');
-  loaderEl.setAttribute('class','loader');
-  loaderEl.innerHTML ='<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: none; display: block; shape-rendering: auto;" width="58px" height="58px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><circle cx="50" cy="50" fill="none" stroke="#e9eaef" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138" transform="rotate(41.9195 50 50)"><animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform></circle></svg>';
-  div.append(loaderEl);
-
-  setTimeout(() => {
-    div.innerHTML = '';
-    var tableId = 'sortable';
-    var table = new DynamicTable(tableId, data);
-    div.appendChild(table);
-    document.getElementById('pagination').style.display = 'flex';
-    new SortableTable(tableId);
-  }, 500);
+  const divId = 'dynamic-table';
+  const tableId = 'sortable';
+  const div = document.getElementById(divId);
+  const placeholderEl = document.getElementsByClassName('no-data')
+  const loaderEl = document.createElement('svg');
+  const paginationEl = document.getElementById('pagination') 
+  if (data.items) {
+    if(placeholderEl[0]){
+      placeholderEl[0].remove();
+    }
+    loaderEl.setAttribute('class', 'loader');
+    loaderEl.innerHTML = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: none; display: block; shape-rendering: auto;" width="58px" height="58px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><circle cx="50" cy="50" fill="none" stroke="#e9eaef" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138" transform="rotate(41.9195 50 50)"><animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform></circle></svg>';
+    div.append(loaderEl);
+    setTimeout(() => {
+      div.innerHTML = '';
+      const table = new DynamicTable(tableId, data);
+      div.appendChild(table);
+      paginationEl.style.display = 'flex';
+      new SortableTable(tableId);
+    }, 500);
+  } else {
+    paginationEl.style.display = 'none';
+    div.innerHTML = '<div class="no-data">No data to display</div>';
+  }
 }
 
 function sortTextFn(list, direction) {
   list = list.sort(function (a, b) {
-
     if (a.value < b.value) {
       return -1;
     }
-
     if (a.value > b.value) {
       return 1;
     }
-
     return 0;
   });
   if (direction === -1) {
@@ -111,11 +121,10 @@ function onHeadigClick(that, cellIndex) {
 
 // Create anchor for each th
 function createAnchor(html, index) {
-  var a = document.createElement('a');
+  const a = document.createElement('a');
   a.href = '#';
   a.innerHTML = html;
   a.onclick = onHeadigClick(this, index);
-
   return a;
 }
 
@@ -124,8 +133,8 @@ function createAnchor(html, index) {
  * @param {array} data json data
  */
 function DynamicTable(tableId, data) {
-  var headings = data.items.reduce(function (result, item) {
-    var item_headings = Object.keys(item);
+  const headings = data.items.reduce(function (result, item) {
+    const item_headings = Object.keys(item);
 
     item_headings.forEach(function (heading) {
       if (result.indexOf(heading) === -1) {
@@ -135,42 +144,37 @@ function DynamicTable(tableId, data) {
     return result;
   }, []);
 
-  var table = document.createElement('table');
-  var thead = document.createElement('thead');
-  var tbody = document.createElement('tbody');
-  var thead_tr = document.createElement('tr');
+  const table = document.createElement('table');
+  const thead = document.createElement('thead');
+  const tbody = document.createElement('tbody');
+  const thead_tr = document.createElement('tr');
 
   headings.forEach(function (heading) {
-    var cell = document.createElement('th');
+    const cell = document.createElement('th');
     cell.innerHTML = heading;
-
     thead_tr.appendChild(cell);
   });
 
   data.items.forEach(function (item) {
-    var tbody_tr = document.createElement('tr');
-
+    const tbody_tr = document.createElement('tr');
     headings.forEach(function (heading) {
-      var cell = document.createElement('td');
-      cell.innerHTML = item[heading].value&&truncate(item[heading].value,15) || '';
+      const cell = document.createElement('td');
+      cell.innerHTML = item[heading].value && truncate(item[heading].value, 15) || '';
       cell.setAttribute('type', item[heading].type);
-
       tbody_tr.appendChild(cell);
     });
 
     tbody.appendChild(tbody_tr);
   });
-
   thead.appendChild(thead_tr);
   table.appendChild(thead);
   table.appendChild(tbody);
   table.id = tableId;
-
   return table;
 }
 
-function truncate(str, n){
-  return (str.length > n) ? str.substr(0, n-1) + '&hellip;' : str;
+function truncate(str, n) {
+  return (str.length > n) ? str.substr(0, n - 1) + '&hellip;' : str;
 };
 
 /**
@@ -179,10 +183,8 @@ function truncate(str, n){
 function SortableTable(id) {
   this.table = document.getElementById(id);
   this.lastSortedTh = null;
-
   if (this.table && this.table.nodeName === 'TABLE') {
-    var headings = this.table.tHead.rows[0].cells;
-
+    const headings = this.table.tHead.rows[0].cells;
     Object.assign([], headings).forEach(
       function (heading, index) {
         if (heading.className.match(/ascendent_sort|descendent_sort/)) {
@@ -190,18 +192,16 @@ function SortableTable(id) {
         }
       }.bind(this),
     );
-
     this.setTableSortable();
   }
 }
 
 SortableTable.prototype.setTableSortable = function () {
-  var headings = this.table.tHead.rows[0].cells;
-
+  const headings = this.table.tHead.rows[0].cells;
   Object.assign([], headings).forEach(
     function (heading, index) {
-      var sortAnchor = createAnchor.bind(this);
-      var html = heading.innerHTML;
+      const sortAnchor = createAnchor.bind(this);
+      const html = heading.innerHTML;
       heading.innerHTML = '';
       heading.appendChild(sortAnchor(html, index));
     }.bind(this),
@@ -209,14 +209,14 @@ SortableTable.prototype.setTableSortable = function () {
 };
 
 SortableTable.prototype.sortColumn = function (el, cellIndex) {
-  var tBody = this.table.tBodies[0];
-  var rows = this.table.rows;
-  var th = el.parentNode;
-  var list = [];
+  const tBody = this.table.tBodies[0];
+  const rows = this.table.rows;
+  const th = el.parentNode;
+  let list = [];
   Object.assign([], rows).forEach(function (row, index) {
     if (index > 0) {
-      var cell = row.cells[cellIndex];
-      var content = cell.textContent || cell.innerText;
+      const cell = row.cells[cellIndex];
+      const content = cell.textContent || cell.innerText;
       list.push({
         value: content,
         row: row,
@@ -225,11 +225,9 @@ SortableTable.prototype.sortColumn = function (el, cellIndex) {
     }
   });
 
-  var hasAscendentClassName = th.className.match('ascendent_sort');
-  var hasDescendentClassName = th.className.match('descendent_sort');
-  debugger
+  const hasAscendentClassName = th.className.match('ascendent_sort');
+  const hasDescendentClassName = th.className.match('descendent_sort');
   list = sortList(list, hasAscendentClassName ? -1 : 1);
-  debugger
   if (hasAscendentClassName) {
     th.className = th.className.replace(/ascendent_sort/, 'descendent_sort');
   } else {
@@ -248,7 +246,6 @@ SortableTable.prototype.sortColumn = function (el, cellIndex) {
   }
 
   this.lastSortedTh = th;
-
   list.forEach(function (item, index) {
     tBody.appendChild(item.row);
   });
@@ -258,7 +255,7 @@ function prevPage() {
   if (tableData.startIndex >= 0) {
     tableData.startIndex -= tableData.maxRows;
     const currPage = tableData.startIndex / tableData.maxRows + 1;
-    search(document.getElementById('searchInput').value, tableData.startIndex,tableData.maxRows, currPage)
+    search(document.getElementById('searchInput').value, tableData.startIndex, tableData.maxRows, currPage)
   }
 }
 
@@ -266,7 +263,7 @@ function nextPage() {
   if ((tableData.startIndex / tableData.maxRows) < numPages()) {
     tableData.startIndex += tableData.maxRows;
     const currPage = tableData.startIndex / tableData.maxRows + 1;
-    search(document.getElementById('searchInput').value, tableData.startIndex,tableData.maxRows, currPage)
+    search(document.getElementById('searchInput').value, tableData.startIndex, tableData.maxRows, currPage)
   }
 }
 
@@ -274,14 +271,12 @@ function changePage(page) {
   const btnNext = document.getElementById("btnNext");
   const btnPrev = document.getElementById("btnPrev");
   const pageSpan = document.getElementById("page");
-  
 
   // Validate page
   if (page < 1) page = 1;
   if (page > numPages()) page = numPages();
-
   pageSpan.innerHTML = page;
-
+  
   if (page == 1) {
     btnPrev.style.visibility = "hidden";
   } else {

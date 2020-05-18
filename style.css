@@ -205,3 +205,8 @@ body {
     border: 1px solid #e9eaef;
     padding: 0 5px;
   }
+
+  .no-data{
+    text-align: center;
+    color: gray;
+  }
